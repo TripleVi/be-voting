@@ -8,7 +8,7 @@
   "main": "src/app.js",
   "scripts": {
     "start": "nodemon --env-file=.env",
-    "serve": "node --env-file=.env src/app.js",
+    "serve": "node src/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "imports": {
