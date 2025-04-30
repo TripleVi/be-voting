@@ -22,10 +22,17 @@ module.exports = {
     "dialect": "mysql"
   },
   "production": {
-    "username": "root",
-    "password": null,
-    "database": "database_production",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+    'host': process.env.DB_HOST,
+    'port': process.env.DB_PORT,
+    'database': process.env.DB_SCHEMA,
+    'username': process.env.DB_USERNAME,
+    'password': process.env.DB_PASSWORD,
+    'timezone': process.env.DB_TIMEZONE,
+    'dialect': 'mysql',
+    'logging': false,
+    'define': {
+      'freezeTableName': true,
+      'underscored': true,
+    },
   }
 }

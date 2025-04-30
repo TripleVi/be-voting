@@ -1,6 +1,12 @@
 import axios from 'axios'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc.js'
+import timezone from 'dayjs/plugin/timezone.js'
 
 import db from '#src/models/index.cjs'
+
+dayjs.extend(utc)
+dayjs.extend(timezone)
 
 const getLeaderBoard = async () => {
     const url = process.env.URL
@@ -17,42 +23,29 @@ const getLeaderBoard = async () => {
     return females.slice(0, 3).map(({ id, name, voteCount: votes}) => ({ id, name, votes }))
 }
 
+// const convertDateByTimezone = (date) => {
+//     return dayjs(date).tz('Asia/Bangkok').format('YYYY-MM-DDTHH:mm:ss.SSSZ')
+// }
+
 const getReports = async () => {
-    const data = await db.HourlyReport.findAll({
+    const reports = await db.HourlyReport.findAll({
         attributes: ['votes', 'userId', 'createdAt'],
         order: [['createdAt'], ['userId']],
     })
-    console.log(new Date())
-    // const data = await db.Test.findAll()
-    // console.log(data[0].get())
-    // console.log(data[0].time.toString())
-    // const result = [];
-
-    // const map = {}; // Dùng để map theo hour
-
-    // data.forEach(item => {
-    // const { hour, ...video } = item;
-    
-    // if (!map[hour]) {
-    //     map[hour] = { hour };
-    //     result.push(map[hour]);
-    // }
-
-    // Object.assign(map[hour], video); // Thêm video vào object tương ứng
-    // });
-
-    // console.log(result);
-    return data
+    const result = {}
+    reports.forEach(item => {
+        const { createdAt, votes, userId } = item.get()
+        const date = dayjs(createdAt).tz('Asia/Bangkok')
+        const txtDate = date.format('YYYY-MM-DD')
+        if (!result[txtDate]) {
+            result[txtDate] = {}
+        }
+        if (!result[txtDate][date.hour()]) {
+            result[txtDate][date.hour()] = {}
+        }
+        result[txtDate][date.hour()][userId] = votes
+    })
+    return result
 }
 
-const updateReportsHourly = async (createdAt) => {
-    const data = await getLeaderBoard()
-    const reports = data.map(({ id: userId, votes}) => ({
-        votes,
-        userId,
-        createdAt,
-    }))
-    await db.HourlyReport.bulkCreate(reports)
-}
-
-export { getLeaderBoard, updateReportsHourly, getReports }
+export { getLeaderBoard, getReports }
