@@ -49,10 +49,10 @@ const getReports = async () => {
     return result
 }
 
-const getReportsByMinute = async () => {
+const getReportsByMin = async () => {
     const now = new Date()
     const startOfHour = new Date(now)
-    startOfHour.setMinutes(0, 0, 0)
+    startOfHour.setHours(now.getHours() - 5, 0, 0, 0)
     const endOfHour = new Date(now)
     endOfHour.setMinutes(59, 59, 999)
     const reports = await db.Report.findAll({
@@ -62,12 +62,12 @@ const getReportsByMinute = async () => {
                 [Op.between]: [startOfHour, endOfHour]
             }
         },
-        order: [['createdAt'], ['userId']],
+        order: [['createdAt', 'DESC'], ['userId']],
     })
     const result = new Array(reports.length / 2)
     for (let i = 0; i < reports.length; i += 2) {
         result[i / 2] = {
-            'mins': reports[i].createdAt.getMinutes(),
+            'min': reports[i].createdAt.getMinutes(),
             [reports[i].userId]: reports[i].votes,
             [reports[i + 1].userId]: reports[i + 1].votes
         }
@@ -75,4 +75,4 @@ const getReportsByMinute = async () => {
     return result
 }
 
-export { getLeaderBoard, getReports, getReportsByMinute }
+export { getLeaderBoard, getReports, getReportsByMin }

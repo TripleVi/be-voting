@@ -6,6 +6,6 @@ const router = Router()
 
 router.get('/ranking', ctrl.fetchLeaderBoard)
 router.get('/reports', ctrl.fetchReports)
-router.get('/mins', ctrl.fetchReportsByMinute)
+router.get('/mins', ctrl.fetchReportsByMin)
 
 export default router

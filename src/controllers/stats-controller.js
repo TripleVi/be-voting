@@ -10,9 +10,9 @@ const fetchReports = async (req, res) => {
     res.send(result)
 }
 
-const fetchReportsByMinute = async (req, res) => {
-    const result = await service.getReportsByMinute()
+const fetchReportsByMin = async (req, res) => {
+    const result = await service.getReportsByMin()
     res.send(result)
 }
 
-export { fetchLeaderBoard, fetchReports, fetchReportsByMinute }
+export { fetchLeaderBoard, fetchReports, fetchReportsByMin }
