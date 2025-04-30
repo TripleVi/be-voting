@@ -2,6 +2,7 @@ import axios from 'axios'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc.js'
 import timezone from 'dayjs/plugin/timezone.js'
+import { Op } from 'sequelize'
 
 import db from '#src/models/index.cjs'
 
@@ -20,7 +21,7 @@ const getLeaderBoard = async () => {
     const data = response.data.componentList.find(e => e.voteList[0]?.id === 101)
     const females = data.voteList[0].nomineeList
     females.sort((a, b) => b.voteCount - a.voteCount)
-    return females.slice(0, 3).map(({ id, name, voteCount: votes}) => ({ id, name, votes }))
+    return females.slice(0, 3).map(({ id, name, voteCount: votes }) => ({ id, name, votes }))
 }
 
 // const convertDateByTimezone = (date) => {
@@ -48,4 +49,30 @@ const getReports = async () => {
     return result
 }
 
-export { getLeaderBoard, getReports }
+const getReportsByMinute = async () => {
+    const now = new Date()
+    const startOfHour = new Date(now)
+    startOfHour.setMinutes(0, 0, 0)
+    const endOfHour = new Date(now)
+    endOfHour.setMinutes(59, 59, 999)
+    const reports = await db.Report.findAll({
+        attributes: ['votes', 'userId', 'createdAt'],
+        where: {
+            createdAt: {
+                [Op.between]: [startOfHour, endOfHour]
+            }
+        },
+        order: [['createdAt'], ['userId']],
+    })
+    const result = new Array(reports.length / 2)
+    for (let i = 0; i < reports.length; i += 2) {
+        result[i / 2] = {
+            'mins': reports[i].createdAt.getMinutes(),
+            [reports[i].userId]: reports[i].votes,
+            [reports[i + 1].userId]: reports[i + 1].votes
+        }
+    }
+    return result
+}
+
+export { getLeaderBoard, getReports, getReportsByMinute }
