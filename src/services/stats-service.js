@@ -62,16 +62,23 @@ const getReportsByMin = async () => {
                 [Op.between]: [startOfHour, endOfHour]
             }
         },
-        order: [['createdAt', 'DESC'], ['userId']],
+        order: [['createdAt'], ['userId']],
     })
-    const result = new Array(reports.length / 2)
+    const result = []
+    let mins = []
     for (let i = 0; i < reports.length; i += 2) {
-        result[i / 2] = {
-            'min': reports[i].createdAt.getMinutes(),
+        const min = reports[i].createdAt.getMinutes()
+        mins.push({
+            min,
             [reports[i].userId]: reports[i].votes,
             [reports[i + 1].userId]: reports[i + 1].votes
+        })
+        if (min === 55) {
+            result.push(mins)
+            mins = []
         }
     }
+    result.push(mins)
     return result
 }
 
