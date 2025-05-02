@@ -78,7 +78,7 @@ const getReportsByMin = async () => {
             mins = []
         }
     }
-    result.push(mins)
+    if (mins.length) result.push(mins)
     return result
 }
 
