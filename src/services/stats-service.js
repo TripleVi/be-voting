@@ -50,11 +50,14 @@ const getReports = async () => {
 }
 
 const getReportsByMin = async () => {
-    const now = new Date()
-    const startOfHour = new Date(now)
-    startOfHour.setHours(now.getHours() - 5, 0, 0, 0)
-    const endOfHour = new Date(now)
-    endOfHour.setMinutes(59, 59, 999)
+    // const now = new Date()
+    // const startOfHour = new Date(now)
+    // startOfHour.setHours(now.getHours() - 5, 0, 0, 0)
+    // const endOfHour = new Date(now)
+    // endOfHour.setMinutes(59, 59, 999)
+    const endOfHour = new Date('2025-05-02T13:59:59.999+0700')
+    const startOfHour = new Date('2025-05-02T00:00:00.000+0700')
+
     const reports = await db.Report.findAll({
         attributes: ['votes', 'userId', 'createdAt'],
         where: {
@@ -79,6 +82,7 @@ const getReportsByMin = async () => {
         }
     }
     if (mins.length) result.push(mins)
+    console.log(result.length)
     return result
 }
 
